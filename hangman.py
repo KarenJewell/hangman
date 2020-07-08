@@ -34,5 +34,6 @@ while solve != word:
     guessed = guessed + [guess]
     if lives < 0:
         print('you died, sorry!')
+        break
 print('you solved the hangman game')
 print('run again to play again')
