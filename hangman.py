@@ -20,7 +20,7 @@ while solve != word:
     print('lives =',  end='')
     print(lives)
     print('please guess')
-    guess =input()
+    guess =input().lower()
     if guess in guessed:
         print('you guessed that already')
     elif (guess in word) == False:
