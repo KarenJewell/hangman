@@ -1,39 +1,54 @@
 # Hangman Game by Bad McProgammer!
-import random
-ws =  open('word-list.txt')
-index = 0
-picked = random.randint(0, 25)
-for w in ws:
-    if index == picked:
-        pick = w
-    index = index+1
 import sys
-guessed =[]
-word=pick[:-1]
-solve = "?" * len(word)
-lives = 9
-while solve != word:
-    for index in range(len(word)):
-        print(solve[index],end="")
-        print(" ",end="")
-    print()
-    print('lives =',  end='')
-    print(lives)
-    print('please guess')
-    guess =input()
+import random
+from typing import Tuple, List
+
+
+def read_file(name: str) -> str:
+    with open(name) as ws:
+        lines = ws.read().splitlines()
+        return lines[random.randint(0, len(lines) - 1)]
+
+
+def print_summary(success: bool) -> str:
+    if success:
+        return 'you solved the hangman game \nrun again to play again'
+    else:
+        return 'you died, sorry!'
+
+
+def prepare_variables(word: str) -> Tuple[List, int, bool, str]:
+    return [], 9, True, "?" * len(word)
+
+
+def check_guess(guess: str, guessed: List, lives: int, solve: str, word: str):
     if guess in guessed:
         print('you guessed that already')
-    elif (guess in word) == False:
-        print('that\'s not in the word')
-        lives = lives - 1
+    elif (guess in word) is False:
+        print("that's not in the word")
+        lives -= 1
     else:
         print('you got a letter')
         for index in range(len(word)):
             if word[index] == guess:
-                solve = solve[0:index] + guess + solve[index+1:]
-    guessed = guessed + [guess]
-    if lives < 0:
-        print('you died, sorry!')
-        break
-print('you solved the hangman game')
-print('run again to play again')
+                solve = f'{solve[0:index]}{guess}{solve[index + 1:]}'
+    return lives, solve
+
+
+def main():
+    word = read_file('word-list.txt')
+    guessed, lives, success, solve = prepare_variables(word)
+    while solve != word and lives > 0:
+        for index in range(len(word)):
+            print(f'{solve[index]} ', end="")
+        print(f'\n\nlives = {lives}\nplease guess')
+        guess = input()
+        lives, solve = check_guess(guess, guessed, lives, solve, word)
+        guessed.append(guess)
+        if lives <= 0:
+            success = False
+    print(print_summary(success))
+
+
+if __name__ == '__main__':
+    main()
